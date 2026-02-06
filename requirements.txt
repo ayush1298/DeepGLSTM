@@ -2,4 +2,4 @@ numpy
 pandas
 scipy
 networkx>=3.0
-rdkit-pypi
+rdkit

@@ -25,9 +25,9 @@ Development of new drugs is an expensive  and time-consuming process. Due to the
 
 ## Preparation <a name="prepration"></a>
 ### Environment Setup <a name="env-setup"></a>
-The dependency pakages can be installed using the command.
-```python
-pip install -r requirements.txt
+Please refer to [INSTALL.md](INSTALL.md) for detailed installation instructions and environment setup.
+```bash
+cat INSTALL.md
 ```
 ### Dataset description <a name="dataset"></a>
 In our experiment we use Davis, Kiba, DTC, Metz, ToxCast, Stitch datasets respectively.
