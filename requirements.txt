@@ -1,10 +1,5 @@
-torch>=2.0.0
 numpy
 pandas
 scipy
 networkx>=3.0
-rdkit
-torch_geometric>=2.3.0
-torch_scatter
-torch_sparse
-torch_cluster
+rdkit-pypi
