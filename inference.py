@@ -8,6 +8,7 @@ import torch.nn as nn
 from models.gcn import GCNNet
 from torch_geometric.loader import DataLoader
 from utils import *
+from tqdm import tqdm
 
 
 def predicting(model, device, loader,hidden,cell):
@@ -16,7 +17,7 @@ def predicting(model, device, loader,hidden,cell):
     total_labels = torch.Tensor()
     print('Make prediction for {} samples...'.format(len(loader.dataset)))
     with torch.no_grad():
-        for data in loader:
+        for data in tqdm(loader, desc="Predicting"):
             data = data.to(device)
             output = model(data,hidden,cell)
             total_preds = torch.cat((total_preds, output.cpu()), 0)
@@ -64,7 +65,7 @@ def main(args):
     for ret in result:
       f.write(','.join(map(str,ret)) + '\n')
   
-  print("Prediction Done and result is Saved in the file!!")
+  print(f"Prediction Done! Results saved to: {os.path.abspath(file_name)}")
 
 
 if __name__ == "__main__":

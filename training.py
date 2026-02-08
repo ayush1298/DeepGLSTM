@@ -7,12 +7,13 @@ import torch
 import torch.nn as nn
 from models.gcn import GCNNet
 from utils import *
+from tqdm import tqdm
 
 # training function at each epoch
 def train(model, device, train_loader, optimizer, epoch,hidden,cell):
     print('Training on {} samples...'.format(len(train_loader.dataset)))
     model.train()
-    for batch_idx, data in enumerate(train_loader):
+    for batch_idx, data in enumerate(tqdm(train_loader, desc=f"Epoch {epoch} Training")):
         data = data.to(device)
         optimizer.zero_grad()
         output = model(data,hidden,cell)
@@ -32,7 +33,7 @@ def predicting(model, device, loader,hidden,cell):
     total_labels = torch.Tensor()
     print('Make prediction for {} samples...'.format(len(loader.dataset)))
     with torch.no_grad():
-        for data in loader:
+        for data in tqdm(loader, desc="Predicting", leave=False):
             data = data.to(device)
             output = model(data,hidden,cell)
             total_preds = torch.cat((total_preds, output.cpu()), 0)
@@ -104,6 +105,12 @@ def main(args):
         print('rmse improved at epoch ', best_epoch, '; best_mse,best_ci:', best_mse,best_ci,model_st,dataset)
       else:
         print(ret[1],'No improvement since epoch ', best_epoch, '; best_mse,best_ci:', best_mse,best_ci,model_st,dataset)
+    
+    print(f"\nTraining finished.")
+    print(f"Best results saved to: {os.path.abspath(result_file_name)}")
+    if args.save_file:
+        model_file_name = args.save_file + '.model'
+        print(f"Best model saved to: {os.path.abspath(model_file_name)}")
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Run DeepGLSTM")

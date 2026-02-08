@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Mac
+.DS_Store
+
+# Data
+data/processed/
+
+# Models
+*.model
+pretrained_model/
+
+# Results
+result*.csv
+Prediction_result_*.csv
+
+# Environments
+env/
+venv/
+.env

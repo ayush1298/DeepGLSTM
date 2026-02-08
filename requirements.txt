@@ -3,3 +3,4 @@ pandas
 scipy
 networkx>=3.0
 rdkit
+tqdm
