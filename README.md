@@ -65,6 +65,12 @@ python3 inference.py
 ```
 Default values of argument parser are set for davis dataset.
 
+### Load Trained Model
+Use `--load_model` to load the model you trained:
+```bash
+python3 inference.py --load_model davis.model
+```
+
 ## Pretrained Models and Dataset <a name="premod-data"></a>
 ### Pretrained Models download links <a name="P-down"></a>
 | Dataset   | Model download link |
