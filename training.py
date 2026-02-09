@@ -10,12 +10,13 @@ from utils import *
 from tqdm import tqdm
 
 # training function at each epoch
-def train(model, device, train_loader, optimizer, epoch,hidden,cell):
+def train(model, device, train_loader, optimizer, epoch):
     print('Training on {} samples...'.format(len(train_loader.dataset)))
     model.train()
     for batch_idx, data in enumerate(tqdm(train_loader, desc=f"Epoch {epoch} Training")):
         data = data.to(device)
         optimizer.zero_grad()
+        hidden, cell = model.init_hidden(batch_size=data.num_graphs)
         output = model(data,hidden,cell)
         loss = loss_fn(output, data.y.view(-1, 1).float().to(device))
         loss.backward()
@@ -27,7 +28,7 @@ def train(model, device, train_loader, optimizer, epoch,hidden,cell):
                                                                            100. * batch_idx / len(train_loader),
                                                                            loss.item()))
 
-def predicting(model, device, loader,hidden,cell):
+def predicting(model, device, loader):
     model.eval()
     total_preds = torch.Tensor()
     total_labels = torch.Tensor()
@@ -35,6 +36,7 @@ def predicting(model, device, loader,hidden,cell):
     with torch.no_grad():
         for data in tqdm(loader, desc="Predicting", leave=False):
             data = data.to(device)
+            hidden, cell = model.init_hidden(batch_size=data.num_graphs)
             output = model(data,hidden,cell)
             total_preds = torch.cat((total_preds, output.cpu()), 0)
             total_labels = torch.cat((total_labels, data.y.view(-1, 1).cpu()), 0)
@@ -70,10 +72,17 @@ def main(args):
   else:
     train_data = TestbedDataset(root='data', dataset=dataset+'_train')
     test_data = TestbedDataset(root='data', dataset=dataset+'_test')
+    
+    if args.n_samples is not None:
+        print(f"Subsetting data to {args.n_samples} samples.")
+        train_data = train_data[:args.n_samples]
+        test_data = test_data[:args.n_samples]
         
     # make data PyTorch mini-batch processing ready
-    train_loader = DataLoader(train_data, batch_size=TRAIN_BATCH_SIZE, shuffle=True,drop_last=True)
-    test_loader = DataLoader(test_data, batch_size=TEST_BATCH_SIZE, shuffle=False,drop_last=True)
+    drop_last_train = len(train_data) > TRAIN_BATCH_SIZE
+    drop_last_test = len(test_data) > TEST_BATCH_SIZE
+    train_loader = DataLoader(train_data, batch_size=TRAIN_BATCH_SIZE, shuffle=True, drop_last=drop_last_train)
+    test_loader = DataLoader(test_data, batch_size=TEST_BATCH_SIZE, shuffle=False, drop_last=drop_last_test)
 
     # training the model
     device = torch.device(cuda_name if torch.cuda.is_available() else "cpu")
@@ -86,9 +95,8 @@ def main(args):
     result_file_name = 'result' + model_st + '_' + dataset +  '.csv'
 
     for epoch in range(NUM_EPOCHS):
-      hidden,cell = model.init_hidden(batch_size=TRAIN_BATCH_SIZE)
-      train(model, device, train_loader, optimizer, epoch+1,hidden,cell)
-      G,P = predicting(model, device, test_loader,hidden,cell)
+      train(model, device, train_loader, optimizer, epoch+1)
+      G,P = predicting(model, device, test_loader)
       ret = [rmse(G,P),mse(G,P),pearson(G,P),spearman(G,P),ci(G,P),get_rm2(G.reshape(G.shape[0],-1),P.reshape(P.shape[0],-1))]
       if ret[1]<best_mse:
         if args.save_file:
@@ -137,6 +145,8 @@ if __name__ == "__main__":
   parser.add_argument("--save_file",type=str,
                       default=None,
                       help="Where to save the trained model. For example davis.model")
+  
+  parser.add_argument("--n_samples", type=int, default=None, help="Number of samples to use for training/testing (subset)")
 
 
   args = parser.parse_args()

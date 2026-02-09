@@ -11,7 +11,7 @@ from utils import *
 from tqdm import tqdm
 
 
-def predicting(model, device, loader,hidden,cell):
+def predicting(model, device, loader):
     model.eval()
     total_preds = torch.Tensor()
     total_labels = torch.Tensor()
@@ -19,6 +19,7 @@ def predicting(model, device, loader,hidden,cell):
     with torch.no_grad():
         for data in tqdm(loader, desc="Predicting"):
             data = data.to(device)
+            hidden, cell = model.init_hidden(batch_size=data.num_graphs)
             output = model(data,hidden,cell)
             total_preds = torch.cat((total_preds, output.cpu()), 0)
             total_labels = torch.cat((total_labels, data.y.view(-1, 1).cpu()), 0)
