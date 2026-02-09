@@ -53,8 +53,7 @@ def main(args):
       if os.path.isfile(model_file_name):
         param_dict = torch.load(model_file_name)
         model.load_state_dict(param_dict)            
-        hidden,cell = model.init_hidden(batch_size=TEST_BATCH_SIZE)
-        G,P = predicting(model, device, test_loader,hidden,cell)
+        G,P = predicting(model, device, test_loader)
         ret = [rmse(G,P),mse(G,P),pearson(G,P),spearman(G,P),ci(G,P),get_rm2(G.reshape(G.shape[0],-1),P.reshape(P.shape[0],-1))]
         ret =[dataset, model_st] +  [round(e,3) for e in ret]
         result += [ ret ]
