@@ -49,6 +49,15 @@ Run the following script to train the model.
 python3 training.py 
 ```
 Default values of argument parser are set for davis dataset.
+
+### New Arguments
+- `--n_samples`: Train on a subset of data (e.g. `--n_samples 100` for debugging).
+- `--save_file`: Filename to save the best model (e.g. `--save_file davis`). It will be saved as `davis.model`.
+
+Example:
+```bash
+python3 training.py --n_samples 100 --save_file davis
+```
 ### Inference on Pretrained Model  <a name="Inf-pre"></a>
 Run the following script to test the model.
 ```python
