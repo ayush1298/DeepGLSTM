@@ -54,6 +54,8 @@ def main(args):
         param_dict = torch.load(model_file_name)
         model.load_state_dict(param_dict)            
         G,P = predicting(model, device, test_loader)
+        plot_file_name = 'plots/prediction_scatter_' + model_st + '_' + dataset + '.png'
+        plot_scatter(G, P, plot_file_name)
         ret = [rmse(G,P),mse(G,P),pearson(G,P),spearman(G,P),ci(G,P),get_rm2(G.reshape(G.shape[0],-1),P.reshape(P.shape[0],-1))]
         ret =[dataset, model_st] +  [round(e,3) for e in ret]
         result += [ ret ]

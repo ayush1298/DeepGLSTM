@@ -91,6 +91,8 @@ def main(args):
     best_mse = 1000
     best_ci = 0
     best_epoch = -1
+    best_G = []
+    best_P = []
     #model_file_name = 'model' + model_st + '_' + dataset +  '.model'
     result_file_name = 'result' + model_st + '_' + dataset +  '.csv'
 
@@ -110,6 +112,8 @@ def main(args):
         best_epoch = epoch+1
         best_mse = ret[1]
         best_ci = ret[-2]
+        best_G = G
+        best_P = P
         print('rmse improved at epoch ', best_epoch, '; best_mse,best_ci:', best_mse,best_ci,model_st,dataset)
       else:
         print(ret[1],'No improvement since epoch ', best_epoch, '; best_mse,best_ci:', best_mse,best_ci,model_st,dataset)
@@ -119,6 +123,9 @@ def main(args):
     if args.save_file:
         model_file_name = args.save_file + '.model'
         print(f"Best model saved to: {os.path.abspath(model_file_name)}")
+    
+    plot_file_name = 'plots/scatter_' + model_st + '_' + dataset + '.png'
+    plot_scatter(best_G, best_P, plot_file_name)
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Run DeepGLSTM")

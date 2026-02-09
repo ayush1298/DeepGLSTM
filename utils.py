@@ -80,6 +80,20 @@ class TestbedDataset(InMemoryDataset):
         # save preprocessed data:
         torch.save((data, slices), self.processed_paths[0])
 
+import matplotlib.pyplot as plt
+
+def plot_scatter(G, P, filename):
+    plt.figure()
+    plt.scatter(G, P, alpha=0.5)
+    plt.plot([min(G), max(G)], [min(G), max(G)], 'k--', lw=2) # Diagonal line
+    plt.xlabel('Measured Binding Affinity')
+    plt.ylabel('Predicted Binding Affinity')
+    plt.title('Predicted vs Measured Binding Affinity')
+    plt.grid(True)
+    plt.savefig(filename)
+    plt.close()
+    print(f"Scatter plot saved to: {os.path.abspath(filename)}")
+
 def rmse(y,f):
     rmse = sqrt(((y - f)**2).mean(axis=0))
     return rmse
