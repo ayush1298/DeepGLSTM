@@ -52,7 +52,8 @@ Default values of argument parser are set for davis dataset.
 
 ### New Arguments
 - `--n_samples`: Train on a subset of data (e.g. `--n_samples 100` for debugging).
-- `--save_file`: Filename to save the best model (e.g. `--save_file davis`). It will be saved as `davis.model`.
+- `--save_file`: Filename to save the best model (e.g. `--save_file davis`). It will be saved as `pretrained_model/davis.model`.
+- Scatter plots of the best model predictions will be saved to `plots/`.
 
 Example:
 ```bash
@@ -68,8 +69,9 @@ Default values of argument parser are set for davis dataset.
 ### Load Trained Model
 Use `--load_model` to load the model you trained:
 ```bash
-python3 inference.py --load_model davis.model
+python3 inference.py --load_model pretrained_model/davis.model
 ```
+Prediction scatter plots will be saved to `plots/`.
 
 ## Pretrained Models and Dataset <a name="premod-data"></a>
 ### Pretrained Models download links <a name="P-down"></a>

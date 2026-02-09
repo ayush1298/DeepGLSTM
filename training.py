@@ -102,7 +102,10 @@ def main(args):
       ret = [rmse(G,P),mse(G,P),pearson(G,P),spearman(G,P),ci(G,P),get_rm2(G.reshape(G.shape[0],-1),P.reshape(P.shape[0],-1))]
       if ret[1]<best_mse:
         if args.save_file:
-          model_file_name = args.save_file + '.model'
+          model_dir = 'pretrained_model'
+          if not os.path.exists(model_dir):
+              os.makedirs(model_dir)
+          model_file_name = os.path.join(model_dir, args.save_file + '.model')
           torch.save(model.state_dict(), model_file_name)
         
         
@@ -121,7 +124,8 @@ def main(args):
     print(f"\nTraining finished.")
     print(f"Best results saved to: {os.path.abspath(result_file_name)}")
     if args.save_file:
-        model_file_name = args.save_file + '.model'
+        model_dir = 'pretrained_model'
+        model_file_name = os.path.join(model_dir, args.save_file + '.model')
         print(f"Best model saved to: {os.path.abspath(model_file_name)}")
     
     plot_file_name = 'plots/scatter_' + model_st + '_' + dataset + '.png'

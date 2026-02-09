@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
   parser.add_argument(
       "--load_model",type=str,
-      default="Pretrained_model/davis.model", help="Load a pretrained model"
+      default="pretrained_model/davis.model", help="Load a pretrained model"
   )
 
   args = parser.parse_args()

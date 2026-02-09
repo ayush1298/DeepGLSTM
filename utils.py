@@ -83,6 +83,9 @@ class TestbedDataset(InMemoryDataset):
 import matplotlib.pyplot as plt
 
 def plot_scatter(G, P, filename):
+    directory = os.path.dirname(filename)
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
     plt.figure()
     plt.scatter(G, P, alpha=0.5)
     plt.plot([min(G), max(G)], [min(G), max(G)], 'k--', lw=2) # Diagonal line
