@@ -53,19 +53,25 @@ def main(args):
       if os.path.isfile(model_file_name):
         param_dict = torch.load(model_file_name)
         model.load_state_dict(param_dict)            
-        G,P = predicting(model, device, test_loader)
-        plot_file_name = 'plots/prediction_scatter_' + model_st + '_' + dataset + '.png'
+        G,P = predicting(model, device, test_loader)    
+        plot_dir = 'plots/inference'
+        if not os.path.exists(plot_dir):
+            os.makedirs(plot_dir)
+        plot_file_name = os.path.join(plot_dir, 'prediction_scatter_' + model_st + '_' + dataset + '.png')
         plot_scatter(G, P, plot_file_name)
         ret = [rmse(G,P),mse(G,P),pearson(G,P),spearman(G,P),ci(G,P),get_rm2(G.reshape(G.shape[0],-1),P.reshape(P.shape[0],-1))]
         ret =[dataset, model_st] +  [round(e,3) for e in ret]
         result += [ ret ]
       else:
         print('model is not available!')
-  file_name = "Prediction_result_" + dataset + ".csv"
+  result_dir = 'results/inference'
+  if not os.path.exists(result_dir):
+      os.makedirs(result_dir)
+  file_name = os.path.join(result_dir, "Prediction_result_" + dataset + ".csv")
   with open(file_name,'w') as f:
     f.write('dataset,model,rmse,mse,pearson,spearman,ci,rm2\n')
     for ret in result:
-      f.write(','.join(map(str,ret)) + '\n')
+      f.write(','.join(map(str,ret) ) + '\n')
   
   print(f"Prediction Done! Results saved to: {os.path.abspath(file_name)}")
 

@@ -94,7 +94,10 @@ def main(args):
     best_G = []
     best_P = []
     #model_file_name = 'model' + model_st + '_' + dataset +  '.model'
-    result_file_name = 'result' + model_st + '_' + dataset +  '.csv'
+    result_dir = 'results/training'
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+    result_file_name = os.path.join(result_dir, 'result' + model_st + '_' + dataset +  '.csv')
 
     for epoch in range(NUM_EPOCHS):
       train(model, device, train_loader, optimizer, epoch+1)
@@ -127,8 +130,11 @@ def main(args):
         model_dir = 'pretrained_model'
         model_file_name = os.path.join(model_dir, args.save_file + '.model')
         print(f"Best model saved to: {os.path.abspath(model_file_name)}")
-    
-    plot_file_name = 'plots/scatter_' + model_st + '_' + dataset + '.png'
+   
+    plot_dir = 'plots/training'
+    if not os.path.exists(plot_dir):
+        os.makedirs(plot_dir)
+    plot_file_name = os.path.join(plot_dir, 'scatter_' + model_st + '_' + dataset + '.png')
     plot_scatter(best_G, best_P, plot_file_name)
 
 if __name__ == "__main__":
