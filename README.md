@@ -76,6 +76,11 @@ Prediction scatter plots will be saved to `plots/`.
 ### Reproducing Paper Tables <a name="repro-tables"></a>
 We provide a script `reproduce_table.py` to reproduce the ablation studies from the paper (Table 5 and Table 6).
 
+**Prerequisite:** Ensure you have created the dataset files first (see [Create Dataset](#create-dataset)):
+```bash
+python3 data_creation.py
+```
+
 **Table 5: Effectiveness of different components**
 ```bash
 python3 reproduce_table.py --table 5 --epoch 1000
