@@ -73,6 +73,25 @@ python3 inference.py --load_model pretrained_model/davis.model
 ```
 Prediction scatter plots will be saved to `plots/`.
 
+### Reproducing Paper Tables <a name="repro-tables"></a>
+We provide a script `reproduce_table.py` to reproduce the ablation studies from the paper (Table 5 and Table 6).
+
+**Table 5: Effectiveness of different components**
+```bash
+python3 reproduce_table.py --table 5 --epoch 1000
+```
+
+**Table 6: Effectiveness of using the power graph**
+```bash
+python3 reproduce_table.py --table 6 --epoch 1000
+```
+
+**Run both experiments:**
+```bash
+python3 reproduce_table.py --table both --epoch 1000
+```
+Change `--epoch` to a smaller number (e.g., 10) for testing.
+
 ## Pretrained Models and Dataset <a name="premod-data"></a>
 ### Pretrained Models download links <a name="P-down"></a>
 | Dataset   | Model download link |
