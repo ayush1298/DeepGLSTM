@@ -25,9 +25,9 @@ Development of new drugs is an expensive  and time-consuming process. Due to the
 
 ## Preparation <a name="prepration"></a>
 ### Environment Setup <a name="env-setup"></a>
-Please refer to [INSTALL.md](INSTALL.md) for detailed installation instructions and environment setup.
+Please refer to [instructions.md](instructions.md) for detailed installation and usage instructions.
 ```bash
-cat INSTALL.md
+
 ```
 ### Dataset description <a name="dataset"></a>
 In our experiment we use Davis, Kiba, DTC, Metz, ToxCast, Stitch datasets respectively.
@@ -36,66 +36,12 @@ Dataset Statistics:
 
 ![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/dataset_statistics.png "Dataset statistics")
 
-## Quick Start <a name="model-tra"></a>
-### Create Dataset <a name="create-dataset"></a>
-Firstly, run the script below to create Pytorch_Geometric file. The file will be created in processed folder in data folder.
-```python
-python3 data_creation.py 
-```
-Default values of argument parser are set for davis dataset.
-### Model Training  <a name="model-tra"></a>
-Run the following script to train the model.
-```python
-python3 training.py 
-```
-Default values of argument parser are set for davis dataset.
-
-### New Arguments
-- `--n_samples`: Train on a subset of data (e.g. `--n_samples 100` for debugging).
-- `--save_file`: Filename to save the best model (e.g. `--save_file davis`). It will be saved as `pretrained_model/davis.model`.
-- Scatter plots of the best model predictions will be saved to `plots/`.
-
-Example:
-```bash
-python3 training.py --n_samples 100 --save_file davis
-```
-### Inference on Pretrained Model  <a name="Inf-pre"></a>
-Run the following script to test the model.
-```python
-python3 inference.py 
-```
-Default values of argument parser are set for davis dataset.
-
-### Load Trained Model
-Use `--load_model` to load the model you trained:
-```bash
-python3 inference.py --load_model pretrained_model/davis.model
-```
-Prediction scatter plots will be saved to `plots/`.
-
-### Reproducing Paper Tables <a name="repro-tables"></a>
-We provide a script `reproduce_table.py` to reproduce the ablation studies from the paper (Table 5 and Table 6).
-
-**Prerequisite:** Ensure you have created the dataset files first (see [Create Dataset](#create-dataset)):
-```bash
-python3 data_creation.py
-```
-
-**Table 5: Effectiveness of different components**
-```bash
-python3 reproduce_table.py --table 5 --epoch 1000
-```
-
-**Table 6: Effectiveness of using the power graph**
-```bash
-python3 reproduce_table.py --table 6 --epoch 1000
-```
-
-**Run both experiments:**
-```bash
-python3 reproduce_table.py --table both --epoch 1000
-```
-Change `--epoch` to a smaller number (e.g., 10) for testing.
+## Usage
+Please refer to [instructions.md](instructions.md) for detailed steps on:
+- Creating datasets
+- Training the model
+- Running inference
+- Reproducing paper tables
 
 ## Pretrained Models and Dataset <a name="premod-data"></a>
 ### Pretrained Models download links <a name="P-down"></a>
