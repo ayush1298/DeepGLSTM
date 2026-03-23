@@ -29,6 +29,11 @@ def predicting(model, device, loader):
 
 def main(args):
   dataset = args.dataset
+  if args.subset_frac is not None:
+      dataset += f"_frac_{args.subset_frac}"
+  elif args.n_samples is not None:
+      dataset += f"_samples_{args.n_samples}"
+
   if args.model == 'ESM_GCN':
       modelings = [ESMGCNNet]
   else:
@@ -103,6 +108,8 @@ if __name__ == "__main__":
 
   parser.add_argument("--model", type=str, default="DeepGLSTM", help="Model to use (DeepGLSTM or ESM_GCN)")
   parser.add_argument("--freeze_esm", action="store_true", help="Freeze ESM embeddings if using ESM_GCN")
+  parser.add_argument("--n_samples", type=int, default=None, help="Number of samples to use (subset)")
+  parser.add_argument("--subset_frac", type=float, default=None, help="Fraction of samples to use (e.g. 0.3 for 30%)")
 
   args = parser.parse_args()
   print(args)

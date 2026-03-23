@@ -49,6 +49,11 @@ LOG_INTERVAL = 20
 
 def main(args):
   dataset = args.dataset
+  if args.subset_frac is not None:
+      dataset += f"_frac_{args.subset_frac}"
+  elif args.n_samples is not None:
+      dataset += f"_samples_{args.n_samples}"
+      
   if args.model == 'ESM_GCN':
       modeling = [ESMGCNNet]
   else:
@@ -79,17 +84,6 @@ def main(args):
     train_data = TestbedDataset(root='data', dataset=dataset+'_train')
     test_data = TestbedDataset(root='data', dataset=dataset+'_test')
     
-    if args.subset_frac is not None:
-        train_n = int(len(train_data) * args.subset_frac)
-        test_n = int(len(test_data) * args.subset_frac)
-        print(f"Subsetting data to {args.subset_frac*100}% ({train_n} train, {test_n} test samples).")
-        train_data = train_data[:train_n]
-        test_data = test_data[:test_n]
-    elif args.n_samples is not None:
-        print(f"Subsetting data to {args.n_samples} samples.")
-        train_data = train_data[:args.n_samples]
-        test_data = test_data[:args.n_samples]
-        
     # make data PyTorch mini-batch processing ready
     drop_last_train = len(train_data) > TRAIN_BATCH_SIZE
     drop_last_test = len(test_data) > TEST_BATCH_SIZE

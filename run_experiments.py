@@ -10,39 +10,49 @@ def run_cmd(cmd):
 
 def main(args):
     esm_flag = "--use_esm" if args.use_esm else ""
+    subset_flag = f"--subset_frac {args.subset_frac}" if args.subset_frac is not None else ""
+    if args.n_samples is not None:
+        subset_flag = f"--n_samples {args.n_samples}"
+        
+    datasets_to_run = args.dataset.split(',')
+    
     # Make sure data is created first
-    run_cmd(f"python3 data_creation.py --dataset davis {esm_flag}")
-    run_cmd(f"python3 data_creation.py --dataset kiba {esm_flag}")
+    for d in datasets_to_run:
+        run_cmd(f"python3 data_creation.py --dataset {d} {esm_flag} {subset_flag}")
 
     epochs = args.epoch
-    subset_flag = f"--subset_frac {args.subset_frac}" if args.subset_frac is not None else ""
 
     print(f"\n=== Running Experiments with Epochs={epochs}, Subset={args.subset_frac} ===")
 
-    print("\n=== Run original DeepGLSTM on the 2 datasets ===")
-    run_cmd(f"python3 training.py --dataset davis --epoch {epochs} {subset_flag} --save_file base_davis --model DeepGLSTM")
-    run_cmd(f"python3 training.py --dataset kiba --epoch {epochs} {subset_flag} --save_file base_kiba --model DeepGLSTM")
+    print(f"\n=== Run original DeepGLSTM ===")
+    for d in datasets_to_run:
+        run_cmd(f"python3 training.py --dataset {d} --epoch {epochs} {subset_flag} --save_file base_{d} --model DeepGLSTM")
 
     if args.use_esm:
         print("\n=== Experiment 1.5: Compare performance with ESM_GCN model ===")
         # 2. ESM_GCN model (default frozen)
-        run_cmd(f"python3 training.py --dataset davis --epoch {epochs} {subset_flag} --save_file esmgcn_frozen_davis --model ESM_GCN --freeze_esm")
-        run_cmd(f"python3 training.py --dataset kiba --epoch {epochs} {subset_flag} --save_file esmgcn_frozen_kiba --model ESM_GCN --freeze_esm")
+        for d in datasets_to_run:
+            run_cmd(f"python3 training.py --dataset {d} --epoch {epochs} {subset_flag} --save_file esmgcn_frozen_{d} --model ESM_GCN --freeze_esm")
 
         print("\n=== Experiment 2: Evaluate effect of frozen vs finetuned ESM embeddings ===")
         # 3. ESM_GCN finetuned
-        run_cmd(f"python3 training.py --dataset davis --epoch {epochs} {subset_flag} --save_file esmgcn_finetune_davis --model ESM_GCN")
+        for d in datasets_to_run:
+            if d == 'davis': # typically we only want to finetune on one large dataset as it's expensive
+                run_cmd(f"python3 training.py --dataset {d} --epoch {epochs} {subset_flag} --save_file esmgcn_finetune_{d} --model ESM_GCN")
 
         print("\n=== Experiment 3: Test cross-dataset generalization (train Davis test KIBA) ===")
         # 4. We already trained on Davis (frozen esm is generally a good baseline). We test on KIBA.
-        run_cmd(f"python3 inference.py --dataset kiba --model ESM_GCN --freeze_esm --load_model pretrained_model/esmgcn_frozen_davis.model")
+        if 'davis' in datasets_to_run and 'kiba' in datasets_to_run:
+            run_cmd(f"python3 inference.py --dataset kiba --model ESM_GCN --freeze_esm --load_model pretrained_model/esmgcn_frozen_davis.model {subset_flag}")
 
     print("\nAll experiments completed successfully!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run all requested experiments automatically")
+    parser.add_argument("--dataset", type=str, default='davis,kiba', help="Comma-separated datasets to run (e.g. davis,kiba)")
     parser.add_argument("--epoch", type=int, default=100, help="Number of training epochs")
     parser.add_argument("--subset_frac", type=float, default=None, help="Fraction of samples to use for training (e.g. 0.3 for 30%)")
+    parser.add_argument("--n_samples", type=int, default=None, help="Number of samples to use")
     parser.add_argument("--use_esm", action="store_true", help="Whether to run ESM tokenization and ESM_GCN experiments")
     args = parser.parse_args()
     

@@ -163,18 +163,18 @@ python3 training.py --dataset davis --model ESM_GCN --freeze_esm
 ```
 
 ### 3.2 Running on Subset of Data
-If you only wish to test the model dynamically on a fraction of the dataset, you can now use the `--subset_frac` argument:
+If you only wish to test the model dynamically on a fraction of the dataset, you can use the `--subset_frac` or `--n_samples` argument.
+If you pass this, `data_creation.py` will process and save the dataset as a dedicated subset `.pt` file (e.g., `davis_frac_0.3_train.pt`). `training.py` and `run_experiments.py` will then seamlessly load these subset files automatically.
 ```bash
-python3 training.py --dataset davis --subset_frac 0.3 --epoch 400
+python3 run_experiments.py --dataset davis --subset_frac 0.3 --epoch 400
 ```
-This command trains the model for `400` epochs on just `30%` of the davis data. This argument applies identically across models.
 
 ### 3.3 Running Automated Experiments
-There is a new script available `run_experiments.py` to trigger full ablations. It accepts arguments dynamically, just like `training.py`:
+There is a new script available `run_experiments.py` to trigger full ablations. It accepts arguments dynamically, and you can specify which dataset(s) to evaluate using the `--dataset` argument (comma-separated):
 ```bash
-# This recreates the datasets internally and starts training the base DeepGLSTM benchmarking models on Davis and KIBA
+# This explicitly creates the subsets internally (if missing) and starts training ONLY on 'davis'.
 # E.g. Run 400 epochs on 30% of the dataset
-python3 run_experiments.py --subset_frac 0.3 --epoch 400
+python3 run_experiments.py --dataset davis --subset_frac 0.3 --epoch 400
 ```
 
 **Testing ESM_GCN Models:**

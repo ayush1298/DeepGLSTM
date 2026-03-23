@@ -62,11 +62,20 @@ max_seq_len = 1000
 
 def main(args):
   dataset = args.dataset
+  
+  if args.subset_frac is not None:
+      dataset += f"_frac_{args.subset_frac}"
+  elif args.n_samples is not None:
+      dataset += f"_samples_{args.n_samples}"
 
   compound_iso_smiles = []
   opts = ['train','test']
   for opt in opts:
-    df = pd.read_csv('data/' + dataset + '_' + opt + '.csv')
+    df = pd.read_csv('data/' + args.dataset + '_' + opt + '.csv')
+    if args.subset_frac is not None:
+        df = df.head(int(len(df) * args.subset_frac))
+    elif args.n_samples is not None:
+        df = df.head(args.n_samples)
     compound_iso_smiles += list( df['compound_iso_smiles'] )
   compound_iso_smiles = set(compound_iso_smiles)
   smile_graph = {}
@@ -82,7 +91,11 @@ def main(args):
       print("Loading ESM Tokenizer...")
       tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
     
-    df = pd.read_csv('data/' + dataset + '_train.csv')
+    df = pd.read_csv('data/' + args.dataset + '_train.csv')
+    if args.subset_frac is not None:
+        df = df.head(int(len(df) * args.subset_frac))
+    elif args.n_samples is not None:
+        df = df.head(args.n_samples)
     train_drugs, train_prots,  train_Y = list(df['compound_iso_smiles']),list(df['target_sequence']),list(df['affinity'])
     train_esm_ids, train_esm_mask = None, None
     if args.use_esm:
@@ -93,7 +106,11 @@ def main(args):
     XT = [seq_cat(t) for t in tqdm(train_prots, desc="Categorizing train sequences")]
     train_drugs, train_prots,  train_Y = np.asarray(train_drugs), np.asarray(XT), np.asarray(train_Y)
     
-    df = pd.read_csv('data/' + dataset + '_test.csv')
+    df = pd.read_csv('data/' + args.dataset + '_test.csv')
+    if args.subset_frac is not None:
+        df = df.head(int(len(df) * args.subset_frac))
+    elif args.n_samples is not None:
+        df = df.head(args.n_samples)
     test_drugs, test_prots,  test_Y = list(df['compound_iso_smiles']),list(df['target_sequence']),list(df['affinity'])
     test_esm_ids, test_esm_mask = None, None
     if args.use_esm:
@@ -120,6 +137,8 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="Creation of dataset")
   parser.add_argument("--dataset",type=str,default='davis',help="Dataset Name (davis,kiba,DTC,Metz,ToxCast,Stitch)")
   parser.add_argument("--use_esm",action="store_true",help="Whether to extract ESM features")
+  parser.add_argument("--n_samples", type=int, default=None, help="Number of samples to use for processing (subset)")
+  parser.add_argument("--subset_frac", type=float, default=None, help="Fraction of samples to use for processing (e.g. 0.3 for 30%)")
   args = parser.parse_args()
   print(args)
   main(args)
