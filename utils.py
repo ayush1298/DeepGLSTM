@@ -9,7 +9,7 @@ import torch
 from tqdm import tqdm
 
 class TestbedDataset(InMemoryDataset):
-    def __init__(self, root='/tmp', dataset='davis', 
+    def __init__(self, root='/tmp', dataset='davis',
                  xd=None, xt=None, y=None, transform=None,
                  pre_transform=None,smile_graph=None, esm_ids=None, esm_mask=None):
 
@@ -116,12 +116,16 @@ def r_squared_error(y_obs, y_pred):
 
     y_obs_sq = sum((y_obs - y_obs_mean) * (y_obs - y_obs_mean))
     y_pred_sq = sum((y_pred - y_pred_mean) * (y_pred - y_pred_mean))
+    if float(y_obs_sq * y_pred_sq) == 0:
+        return np.nan
     return mult / float(y_obs_sq * y_pred_sq)
 
 def get_k(y_obs, y_pred):
     y_obs = np.array(y_obs)
     y_pred = np.array(y_pred)
 
+    if float(sum(y_pred * y_pred)) == 0:
+        return np.nan
     return sum(y_obs * y_pred) / float(sum(y_pred * y_pred))
 
 
@@ -133,7 +137,8 @@ def squared_error_zero(y_obs, y_pred):
     y_obs_mean = [np.mean(y_obs) for y in y_obs]
     upp = sum((y_obs - (k * y_pred)) * (y_obs - (k * y_pred)))
     down = sum((y_obs - y_obs_mean) * (y_obs - y_obs_mean))
-
+    if float(down) == 0:
+        return np.nan
     return 1 - (upp / float(down))
 
 
@@ -175,5 +180,7 @@ def ci(y,f):
             j = j - 1
         i = i - 1
         j = i-1
+    if z == 0.0:
+        return np.nan
     ci = S/z
     return ci

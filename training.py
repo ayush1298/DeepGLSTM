@@ -63,6 +63,8 @@ def main(args):
   model_st = modeling[0].__name__
   if args.model == 'ESM_GCN' and not args.freeze_esm:
       model_st += "_finetune"
+  if args.use_attention:
+      model_st += f"_attn_{args.attention_type}"
 
   cuda_name = "cuda:0"
   print('cuda_name:', cuda_name)

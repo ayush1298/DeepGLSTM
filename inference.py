@@ -57,6 +57,8 @@ def main(args):
     test_loader = DataLoader(test_data, batch_size=TEST_BATCH_SIZE, shuffle=False,drop_last=True)
     for modeling in modelings:
       model_st = modeling.__name__
+      if args.use_attention:
+          model_st += f"_attn_{args.attention_type}"
       print('\npredicting for ', dataset, ' using ', model_st)
       device = torch.device(cuda_name if torch.cuda.is_available() else "cpu")
       if args.model == 'ESM_GCN':
@@ -81,7 +83,8 @@ def main(args):
   result_dir = 'results/inference'
   if not os.path.exists(result_dir):
       os.makedirs(result_dir)
-  file_name = os.path.join(result_dir, "Prediction_result_" + dataset + ".csv")
+  attn_suffix = f"_attn_{args.attention_type}" if args.use_attention else ""
+  file_name = os.path.join(result_dir, "Prediction_result_" + dataset + attn_suffix + ".csv")
   with open(file_name,'w') as f:
     f.write('dataset,model,rmse,mse,pearson,spearman,ci,rm2\n')
     for ret in result:

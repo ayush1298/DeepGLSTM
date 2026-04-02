@@ -26,6 +26,6 @@ set -e # exit on error
 # python run_experiments.py --epoch 1 --subset_frac 0.001 --use_esm --use_attention --attention_type cross
 
 echo "Running ESM model + both attention"
-python run_experiments.py --epoch 1 --subset_frac 0.001 --use_esm --use_attention --attention_type both
+python run_experiments.py --dataset davis --epoch 1 --subset_frac 0.0001 --use_esm
 
 echo "All experiments finished successfully"
