@@ -75,7 +75,7 @@ def main(args):
   for opt in opts:
     df = pd.read_csv('data/' + args.dataset + '_' + opt + '.csv')
     if args.subset_frac is not None:
-        df = df.head(int(len(df) * args.subset_frac))
+        df = df.head(max(1, int(len(df) * args.subset_frac)))
     elif args.n_samples is not None:
         df = df.head(args.n_samples)
     compound_iso_smiles += list( df['compound_iso_smiles'] )
@@ -95,7 +95,7 @@ def main(args):
     
     df = pd.read_csv('data/' + args.dataset + '_train.csv')
     if args.subset_frac is not None:
-        df = df.head(int(len(df) * args.subset_frac))
+        df = df.head(max(1, int(len(df) * args.subset_frac)))
     elif args.n_samples is not None:
         df = df.head(args.n_samples)
     train_drugs, train_prots,  train_Y = list(df['compound_iso_smiles']),list(df['target_sequence']),list(df['affinity'])
@@ -110,7 +110,7 @@ def main(args):
     
     df = pd.read_csv('data/' + args.dataset + '_test.csv')
     if args.subset_frac is not None:
-        df = df.head(int(len(df) * args.subset_frac))
+        df = df.head(max(1, int(len(df) * args.subset_frac)))
     elif args.n_samples is not None:
         df = df.head(args.n_samples)
     test_drugs, test_prots,  test_Y = list(df['compound_iso_smiles']),list(df['target_sequence']),list(df['affinity'])
