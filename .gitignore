@@ -13,8 +13,8 @@ data/processed/
 pretrained_model/
 
 # Results
-result*.csv
-Prediction_result_*.csv
+# result*.csv
+# Prediction_result_*.csv
 
 # Environments
 env/
