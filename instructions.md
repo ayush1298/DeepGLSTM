@@ -201,3 +201,13 @@ These flags are fully supported in `inference.py` and `run_experiments.py` as we
 ```bash
 python3 run_experiments.py --use_attention --attention_type both
 ```
+
+### 3.5 Interactive Attention Explorer Demo
+
+We have provided a web-based interactive visualization using Gradio to explore how the model computes attention between drug and protein representations for specific test examples.
+
+To run the demo:
+```bash
+python3 demo.py
+```
+This will launch a Gradio interface (usually at `http://0.0.0.0:7860/`) where you can select a test pair and view Q/K/V heatmaps and attention weights.

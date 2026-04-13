@@ -7,3 +7,6 @@ tqdm
 matplotlib
 torch_sparse
 pytorch_geometric
+gradio
+seaborn
+transformers

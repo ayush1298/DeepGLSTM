@@ -1,98 +1,76 @@
-# DeepGLSTM: Deep Graph Convolutional Network and LSTM based approach for predicting drug-target binding affinity
-# Quick Links
-1. [Abstract](#task)
-2. [Model Architecture](#Model-Architecture)
-3. [Preparation](#prepration)
-   1. [Environment Setup](#env-setup)
-   2. [Dataset description](#dataset)
-4. [Quick Start](#start)
-   1. [Create Dataset](#create-dataset)
-   2. [Model Training](#model-tra)
-   3. [Inference on Pretrained Model](#Inf-pre)
-5. [Pretrained Models and Dataset](#premod-data)
-   1. [Pretrained Models download links](#P-down)
-   2. [Dataset download links](#data-down)
-6. [Model Performance Stats](#stats)
-7. [Case studies on SARS-CoV-2 viral proteins](#case)
-8. [Citation](#cite)
+# DeepGLSTM: Deep Graph Convolutional Network and LSTM-based Approach for Predicting Drug-Target Binding Affinity
 
-## Abstract <a name="task"></a>
-Development of new drugs is an expensive  and time-consuming process. Due to the world-wide SARS-CoV-2 outbreak, it is essential that new drugs for SARS-CoV-2 are developed as soon as possible. Drug repurposing techniques can reduce the time span needed to develop new drugs by probing the list of existing FDA-approved drugs and their properties to reuse them for combating the new disease. We propose a novel architecture DeepGLSTM, which is a Graph Convolutional network and LSTM based method that predicts binding affinity values  between the FDA-approved drugs and the viral proteins of SARS-CoV-2. Our proposed model has been trained on Davis, KIBA (Kinase Inhibitor Bioactivity), DTC (Drug Target Commons), Metz, ToxCast and STITCH datasets. We use our novel architecture to predict a Combined Score (calculated using Davis and KIBA score) of 2,304 FDA-approved drugs against 5 viral proteins. On the basis of the Combined Score, we prepare a list of the top-18 drugs with the highest binding affinity for 5 viral proteins present in SARS-CoV-2. Subsequently, this list may be used for the creation of new useful drugs. For more details please visit our [work](https://arxiv.org/pdf/2201.06872v1.pdf).
+DeepGLSTM is an end-to-end deep learning framework designed to predict the binding affinity between drugs (small molecules) and target proteins. Originally developed to aid drug repurposing for SARS-CoV-2, the project has since evolved to include state-of-the-art transformer-based extensions.
 
+## Project Overview
 
-## Model Architecture <a name="Model-Architecture"></a>
-![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/architecture.jpg "DeepGLSTM")
+### Phase 1: The Original DeepGLSTM Work
+The foundational work introduces a novel deep learning architecture combining **Graph Convolutional Networks (GCN)** for extracting drug molecular graph features and **Long Short-Term Memory (LSTM)** networks for extracting protein sequence features. 
 
-## Preparation <a name="prepration"></a>
-### Environment Setup <a name="env-setup"></a>
-Please refer to [instructions.md](instructions.md) for detailed installation and usage instructions.
-```bash
+Tested on Davis, KIBA, DTC, Metz, ToxCast, and STITCH datasets, the model effectively predicts binding affinity and was successfully used to rank 2,304 FDA-approved drugs against SARS-CoV-2 viral proteins for drug repurposing. For more details on the foundational methodology, please read the [original publication](https://arxiv.org/pdf/2201.06872v1.pdf).
 
-```
-### Dataset description <a name="dataset"></a>
-In our experiment we use Davis, Kiba, DTC, Metz, ToxCast, Stitch datasets respectively.
+### Phase 2: Modern Extensions (ESM-2, Attention Fusions, and GraphSite)
+To push the predictive capabilities further, the codebase has been significantly extended:
+- **ESM-2 Protein Embeddings:** We replaced the classic LSTM protein encoder with Facebook's massive pre-trained `ESM-2` language model (`esm2_t33_650M_UR50D`), allowing the extraction of much richer protein sequence representations.
+- **Advanced Fusion Mechanisms:** Moving beyond simple vector concatenation, we implemented **Multi-Head Attention modules** (`self`, `cross`, and `both` configurations) to dynamically fuse drug and target embeddings before the final prediction stages.
+- **Interactive Visualizations:** We built a web-based **Gradio Dashboard** (`demo.py`) that visually unpacks the model pipeline. It generates dynamic heatmaps of the Query/Key/Value steps within the cross-attention layer to explain *how* the model scores specific drug-target pairs.
 
-Dataset Statistics:
+## Model Architectures
 
-![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/dataset_statistics.png "Dataset statistics")
+### Original DeepGLSTM Structure
+Below is the architectural flow of the original model relying on Graph Convolutions and LSTMs.
+![DeepGLSTM Architecture](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/architecture.jpg "DeepGLSTM")
 
-## Usage
-Please refer to [instructions.md](instructions.md) for detailed steps on:
-- Creating datasets
-- Training the model
-- Running inference
-- Reproducing paper tables
-- Running Pick-and-Plug ESM-2 + GCN Architecture (with optional data subsets and automated experiment scripts)
-- **[NEW]** Using Attention Mechanisms (`self`, `cross`, `both`) instead of concatenation for fusing drug and target embeddings.
+### ESM-2 + GCN Attention Flow
+In our extended architecture, the flow is adapted to leverage modern transformers:
+- **Drug Branch:** Molecular Graph -> GCN Layers -> Global Mean Pool -> Attention Projection
+- **Protein Branch:** FASTA Sequence -> ESM-2 Model -> EOS Token Extraction -> Attention Projection
+- **Fusion Layer:** Multi-Head Attention (`cross` and `self`) dynamically weighs the combined features before passing them to the final dense MLP layers for affinity scoring.
 
-## Pretrained Models and Dataset <a name="premod-data"></a>
-### Pretrained Models download links <a name="P-down"></a>
-| Dataset   | Model download link |
-| --------- | :------------------:|
-| Davis     | [Link](https://drive.google.com/file/d/1-lzd2Hq5bidsdJI8gGvfIducHDwL_PLd/view?usp=sharing) |
-| Kiba      | [Link](https://drive.google.com/file/d/1buwSFWxmyBOLSdJ9BiMOa8E-GvMGJnar/view?usp=sharing) |
-| DTC       | [Link](https://drive.google.com/file/d/1Pam_irCkpKsvNGIdJM8rC9r79u6o5Q7t/view?usp=sharing) |
-| Metz      | [Link](https://drive.google.com/file/d/1X4qhc-9zmwiGPB_83NFgTiA-cOUStQeJ/view?usp=sharing) |
-| ToxCast   | [Link](https://drive.google.com/file/d/1r4y-a7rhfcYjvWLBwRqW5ckfeewHNH_9/view?usp=sharing) |
-| Stitch    | [Link](https://drive.google.com/file/d/1JwIhSrSRUR1CEEZc6kIlNiphPHa47_x9/view?usp=sharing) |
+---
 
-Download models from the above table for particular dataset and store in the pretrained_model folder.
+## Getting Started and Usage
 
-### Dataset download links <a name="P-down"></a>
-| Dataset   | Dataset download links |
-| --------- | :------------------:|
-| Davis     |[Link](https://drive.google.com/drive/folders/1IDDOEAeBz3DiVWuwPDbGBm3-zJoY5S5L?usp=share_link)|
-| Kiba      |[Link](https://drive.google.com/drive/folders/1LPPhV2RNhADE0rC5OKkHLluGD-T4yFUS?usp=share_link)|
-| DTC       |[Link](https://drive.google.com/drive/folders/12iB06YOTsF7NTMhOcaF0f11jTjgmGJ9O?usp=share_link)|
-| Metz      |[Link](https://drive.google.com/drive/folders/1_JNDEfFO8DFfyvVX633mv2mj43CG7Pnj?usp=share_link)|
-| ToxCast   |[Link](https://drive.google.com/drive/folders/1PcFlVYdq4EJuHAF8vG7x2FntrPNHt69m?usp=share_link)|
-| Stitch    |[Link](https://drive.google.com/drive/folders/1F4sRWS9k4bbs3sDf_bPpxiCnpYcTeSXf?usp=share_link)|
+The codebase is engineered to be highly flexible, allowing you to easily switch between the classic LSTM methodology and the new ESM-2 transformer models.
 
-Download dataset from the above table for particular data and store in the data folder. For each folder in the link there are two csv file train and test.
+For complete instructions on:
+- **Environment setup** (PyTorch, PyG, RDKit, Transformers)
+- **Dataset generation** (Processing Davis, KIBA, etc., into `.pt` files)
+- **Training pipelines & Ablation Studies** (Running subsets, automated scripts)
+- **Running the Interactive Attention Dashboard**
 
-## Model Performance Stats <a name="stats"></a>
+**[Please Refer to instructions.md](instructions.md)**
 
-![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/Full_fig%20.jpg "Full_fig")
+---
 
-Plots showing DeepGLSTM versus measured binding affinity values for the (a)  Davis dataset (b) KIBA dataset (c) DTC dataset (d) Metz dataset (e) ToxCast dataset (f) STITCH dataset. In figure Coef_V is Pearson correlation coefficient.
+## Datasets and Pretrained Models
 
-## Case studies on SARS-CoV-2 viral proteins <a name="case"></a>
-![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/Sup_table.jpeg "Sup_1")
-![alt text](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/sup_table2.jpeg "Sup_2")
+The framework has been evaluated on multiple drug-target interaction datasets. Below are the download links for the raw datasets and original pretrained model checkpoints.
 
-## Citation  <a name="cite"></a>
-Please cite our paper if it's helpful to you in your research.
+### Dataset Downloads
+| Dataset | Dataset Download Links |
+| :--- | :--- |
+| **Davis** | [Google Drive Link](https://drive.google.com/drive/folders/1IDDOEAeBz3DiVWuwPDbGBm3-zJoY5S5L?usp=share_link) |
+| **KIBA** | [Google Drive Link](https://drive.google.com/drive/folders/1LPPhV2RNhADE0rC5OKkHLluGD-T4yFUS?usp=share_link) |
+| **DTC** | [Google Drive Link](https://drive.google.com/drive/folders/12iB06YOTsF7NTMhOcaF0f11jTjgmGJ9O?usp=share_link) |
+| **Metz** | [Google Drive Link](https://drive.google.com/drive/folders/1_JNDEfFO8DFfyvVX633mv2mj43CG7Pnj?usp=share_link) |
+| **ToxCast** | [Google Drive Link](https://drive.google.com/drive/folders/1PcFlVYdq4EJuHAF8vG7x2FntrPNHt69m?usp=share_link) |
+| **STITCH** | [Google Drive Link](https://drive.google.com/drive/folders/1F4sRWS9k4bbs3sDf_bPpxiCnpYcTeSXf?usp=share_link) |
 
-```bibtext
-@inbook{doi:10.1137/1.9781611977172.82,
-author = {Shrimon Mukherjee and Madhusudan Ghosh and Partha Basuchowdhuri},
-title = {DeepGLSTM: Deep Graph Convolutional Network and LSTM based approach for predicting drug-target binding affinity},
-booktitle = {Proceedings of the 2022 SIAM International Conference on Data Mining (SDM)},
-chapter = {},
-pages = {729-737},
-doi = {10.1137/1.9781611977172.82},
-URL = {https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.82},
-eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9781611977172.82},
-    abstract = { Abstract Development of new drugs is an expensive and time-consuming process. Due to the world-wide SARS-CoV-2 outbreak, it is essential that new drugs for SARS-CoV-2 are developed as soon as possible. Drug repurposing techniques can reduce the time span needed to develop new drugs by probing the list of existing FDA-approved drugs and their properties to reuse them for combating the new disease. We propose a novel architecture DeepGLSTM, which is a Graph Convolutional network and LSTM based method that predicts binding affinity values between the FDA-approved drugs and the viral proteins of SARS-CoV-2. Our proposed model has been trained on Davis, KIBA (Kinase Inhibitor Bioactivity), DTC (Drug Target Commons), Metz, ToxCast and STITCH datasets. We use our novel architecture to predict a Combined Score (calculated using Davis and KIBA score) of 2,304 FDA-approved drugs against 5 viral proteins. On the basis of the Combined Score, we prepare a list of the top-18 drugs with the highest binding affinity for 5 viral proteins present in SARS-CoV-2. Subsequently, this list may be used for the creation of new useful drugs. }
-}
-```
+> *Note:* Store downloaded datasets in the `data/` folder. Each link contains a `_train.csv` and `_test.csv` file.
+
+---
+
+## Model Performance Stats
+
+Plots showing original DeepGLSTM predictions versus measured binding affinity values. **Coef_V** refers to the Pearson correlation coefficient.
+
+![Model Performance](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/Full_fig%20.jpg "Full_fig")
+
+*(a) Davis (b) KIBA (c) DTC (d) Metz (e) ToxCast (f) STITCH*
+
+## Case Studies on SARS-CoV-2 Viral Proteins
+We applied DeepGLSTM to calculate a Combined Score for 2,304 FDA-approved drugs against 5 viral proteins to identify ideal repurposing candidates.
+
+![Case Study Table 1](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/Sup_table.jpeg "Sup_1")
+![Case Study Table 2](https://github.com/MLlab4CS/DeepGLSTM/blob/main/images/sup_table2.jpeg "Sup_2")

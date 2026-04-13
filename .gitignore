@@ -11,6 +11,7 @@ data/processed/
 # Models
 *.model
 pretrained_model/
+.gradio
 
 # Results
 # result*.csv
