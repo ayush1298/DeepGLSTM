@@ -1,0 +1,2 @@
+dataset,model,rmse,mse,pearson,spearman,ci,rm2
+DTC,GCNNet,0.691,0.477,0.735,0.666,0.757,0.533
